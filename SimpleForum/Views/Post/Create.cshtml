@@ -1,0 +1,49 @@
+﻿@model SimpleForum.Models.Post.NewPostModel
+@{
+    var host = Context.Request.Host.ToString();
+    ViewData["Title"] = "Tạo bài viết mới";
+}
+
+@if (Model.IsActive)
+{
+    <div class="createPostSection">
+        <h1>Bài viết mới | @Model.ForumName</h1>
+
+        <form asp-action="AddPost" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title">Tiêu đề</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Content">Nội dung</label>
+                <textarea asp-for="Content" rows="20" class="form-control"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <button type="submit" id="submitPostBtn" class="btn btn-submitPost">Đăng bài</button>
+            <input asp-for="ForumId" type="hidden" />
+        </form>
+    </div>
+}
+else
+{
+    <h2>Ở trong tù thì không được đăng bài!!</h2>
+}
+
+@section Scripts {
+    <script src="//@host/lib/tinymce/tinymce.min.js"></script> @*with enabled CDN tinymce is not able to find some files*@
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: ['advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                'searchreplace wordcount visualblocks visualchars code fullscreen',
+                'insertdatetime media nonbreaking save table contextmenu directionality',
+                'emoticons template paste textcolor colorpicker textpattern imagetools'
+            ],
+            toolbar1: 'insertfile undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image |print preview media | forecolor backcolor emoticons|fontselect fontsizeselect styleselect'
+
+        });
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

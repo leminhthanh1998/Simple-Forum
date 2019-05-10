@@ -1,0 +1,53 @@
+﻿@model IEnumerable<SimpleForum.Areas.Admin.Models.Review.ReviewPostListingModel>
+
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Phê duyệt các bài viết";
+}
+
+<div class="row" id="forumIndexContent">
+    <h1>Phê duyệt các bài viết</h1>
+    @if (Model.Any())
+    {
+        <table class="table table-striped table-responsive-md btn-table">
+
+            <thead>
+                <tr>
+                    <th>Tiêu đề</th>
+                    <th>Tên thành viên</th>
+                    <th>Thời gian</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var post in Model)
+                {
+                    <tr>
+                        <td>
+                            <a asp-controller="Post" asp-action="Index" asp-route-id="@post.Slug">@post.Title</a>
+                        </td>
+                        <td><a asp-controller="Profile" asp-action="Detail" asp-route-id="@post.UserId">@post.UserName</a></td>
+                        <td>
+                            <span class="postDate">@post.Created</span>
+                        </td>
+                        <td>
+                            <p><a class="btn btn-info" asp-area="Admin" asp-controller="Review" asp-action="Accept" asp-route-id="@post.Slug">Duyệt bài</a></p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    }
+    else
+    {
+        <div class="noPosts">
+            <h3>
+                Hiện không có bài viết nào cần phê duyệt!
+            </h3>
+        </div>
+
+    }
+</div>

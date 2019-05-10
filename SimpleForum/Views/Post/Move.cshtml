@@ -1,0 +1,21 @@
+﻿@model SimpleForum.Models.Post.MovePostIndexModel
+@{ 
+     ViewData["Title"] = "Di chuyển bài viết";
+}
+<h1>Di chuyển bài viết</h1>
+
+<div class="createPostSection">
+    <form asp-action="MovePost" method="post">        
+        <div class="form-group">
+            <select class="form-control" asp-for="NewForumId">
+                @foreach (var f in Model.Forums)
+                {
+                    <option value="@f.ID">@f.Title</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-submitPost">Chuyển</button>
+        <input asp-for="PostId" type="hidden" />
+        <input asp-for="OldForumId" type="hidden"/>
+    </form>
+</div>

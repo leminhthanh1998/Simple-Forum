@@ -1,0 +1,185 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject UserManager<SimpleForum.Data.Models.ApplicationUser> UserManager
+@inject SignInManager<SimpleForum.Data.Models.ApplicationUser> SignInmanager
+@{
+    var host = Context.Request.Scheme + "://" + Context.Request.Host;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>@ViewData["Title"]</title>
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="@ViewData[" Title"]" />
+    <meta property="og:description" content="@ViewData[" Description"]" />
+    <meta property="og:url" content="@(host + Context.Request.Path)" />
+    <meta property="og:image" content="@host/images/pwa/icon512x512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+
+
+    @*
+        <environment include="Development">
+            <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        </environment>
+        <environment exclude="Development">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css"
+                  asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+                  asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
+                  crossorigin="anonymous"
+                  integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE=" />
+        </environment>*@
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="~/page/css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="~/page/css/animate.css">
+
+    <link rel="stylesheet" href="~/page/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/page/css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="~/page/css/magnific-popup.css">
+
+    <link rel="stylesheet" href="~/page/css/aos.css">
+
+    <link rel="stylesheet" href="~/page/css/ionicons.min.css">
+
+    <link rel="stylesheet" href="~/page/css/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="~/page/css/jquery.timepicker.css">
+
+    <link rel="stylesheet" href="~/page/css/flaticon.css">
+    <link rel="stylesheet" href="~/page/css/icomoon.css">
+    <link rel="stylesheet" href="~/page/css/stylepage.css">
+    @Html.Raw(JavaScriptSnippet.FullScript)
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+        <div class="container">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="oi oi-menu"></span> Menu
+            </button>
+
+            <div class="collapse navbar-collapse" id="ftco-nav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Forum" asp-action="Index">Forum</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Profile" asp-action="Index">Thành viên</a></li>
+                    @if (SignInmanager.IsSignedIn(User))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Profile" asp-action="Detail" asp-route-id="@UserManager.GetUserId(User)">Tường nhà</a>
+                        </li>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Mod"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Moderator" asp-controller="Home" asp-action="Index">Moderator</a>
+                        </li>
+                    }
+
+                    <partial name="_LoginPartial" class="nav-link" />
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <br />
+    <br />
+    <div class="container">
+        <partial name="_CookieConsentPartial" />
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+        <button onclick="topFunction()" id="myBtn" title="Go to top" style="display: none">Top</button>
+        <button onclick="goToNewCmt()" id="notifyNewCmt" style="display: none">Có bình luận mới!</button>
+    </div>
+
+
+    <div class="container">
+        <div style="background-color: black">
+            <div class="row">
+                <div class="col-md-12 text-center" style="display:flex;justify-content:center;align-items:center;">
+
+                    <p style="color:white;text-align:center">
+                        Copyright &copy;
+                        <script>document.write(new Date().getFullYear() + " ");</script> All rights reserved | This forum is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="#" target="_blank">BTS | Version 0.18</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- loader -->
+    <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" /><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" /></svg></div>
+
+
+
+
+    @*<environment include="Development">
+            <script src="~/lib/jquery/dist/jquery.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+        </environment>
+        <environment exclude="Development">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+                    asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                    asp-fallback-test="window.jQuery"
+                    crossorigin="anonymous"
+                    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
+            </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"
+                    asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                    crossorigin="anonymous"
+                    integrity="sha256-E/V4cWE4qvAeO5MOhjtGtqDzPndRO1LBk8lJ/PR7CA4=">
+            </script>
+        </environment>*@
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @*
+        <script src="~/page/js/jquery.min.js"></script>*@
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <script src="~/page/js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="~/page/js/popper.min.js"></script>
+    <script src="~/page/js/bootstrap.min.js"></script>
+    <script src="~/page/js/jquery.easing.1.3.js"></script>
+    <script src="~/page/js/jquery.waypoints.min.js"></script>
+    <script src="~/page/js/jquery.stellar.min.js"></script>
+    <script src="~/page/js/owl.carousel.min.js"></script>
+    <script src="~/page/js/jquery.magnific-popup.min.js"></script>
+    <script src="~/page/js/aos.js"></script>
+    <script src="~/page/js/jquery.animateNumber.min.js"></script>
+    <script src="~/page/js/bootstrap-datepicker.js"></script>
+    @*
+        <script src="~/page/js/jquery.timepicker.min.js"></script>*@
+    <script src="~/page/js/scrollax.min.js"></script>
+    <script src="~/page/js/main.js"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+    <script>
+        var ipAddress='@HttpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString()';
+        var connection2 = new signalR.HubConnectionBuilder().withUrl("/userhub", { transport: signalR.HttpTransportType.WebSockets, skipNegotiation: true }).build();
+
+    connection2.start().then(() => {
+        connection2.invoke("SendInfo", document.location.pathname, ipAddress).catch(function (err) {
+                return console.error(err.toString());
+            });
+        });
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

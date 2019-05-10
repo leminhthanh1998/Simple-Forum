@@ -1,0 +1,17 @@
+﻿@model SimpleForum.Areas.Admin.Models.Home.DeleteForumModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Xóa diễn đàn con";
+}
+
+<div class="container body-content">
+    <div class="row sectionHeader">
+        <div class="sectionHeading">Bạn có chắc muốn xóa forum này không?</div>
+    </div>
+    <form asp-action="ConfirmDelete" asp-controller="Home" asp-area="Admin">
+        <input type="hidden" asp-for="Id" />
+        <button id="deleteButton" class="btn btn-lg btn-danger">Xác nhận xóa</button>
+        <button id="deleteButton" asp-controller="Post" asp-action="Index" asp-area="Admin" class="btn btn-lg btn-default">Hủy</button>
+    </form>
+
+</div>

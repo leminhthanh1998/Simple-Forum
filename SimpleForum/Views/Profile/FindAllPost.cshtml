@@ -1,0 +1,73 @@
+﻿@model SimpleForum.Models.ApplicationUser.FindAllPostModel
+@using SimpleForum.Models.Post
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+
+
+<div class="container body-content">
+    <div class="row sectionHeader">
+        <div class="sectionHeading">
+            <span id="results">Đây là tất cả bài viết của @Model.UserName</span>
+        </div>
+    </div>
+    <div class="row" id="forumIndexContent">
+        @if (((IEnumerable<PostListingModel>)ViewBag.OnePageOfPost).Any())
+        {
+            <table class="table table-hover table-bordered" id="forumIndexTable">
+                <tbody>
+                    @foreach (var post in ViewBag.OnePageOfPost)
+                    {
+                        <tr>
+                            <td>
+                                <div class="forumLogo" style="background-image: url(@post.Forum.ImageUrl); background-size:100%"></div>
+                                <div class="postData">
+                                    <div class="postTitle">
+                                        <a asp-controller="Post" asp-action="Index" asp-route-id="@post.Slug">@post.Title</a>
+                                    </div>
+                                    <div class="forumSubTitle">
+                                        <div>
+                                            bởi:
+                                            <span class="postAuthor">
+                                                <a asp-controller="Profile" asp-action="Detail" asp-route-id="@post.AuthorId">
+                                                    @post.AuthorName
+                                                </a>
+                                            </span>
+                                            ở:
+                                            <span class="postForum">
+                                                <a asp-controller="Forum" asp-action="Topic" asp-route-id="@post.Forum.Id">@post.Forum.Name</a>
+                                            </span>
+                                            lúc:
+                                            <span class="postDate">
+                                                @post.DatePosted
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="forumPostCount">
+                                    Trả lời: @post.RepliesCount
+                                </div>
+                            </td>
+                            <td>
+                                <div class="postDate">@post.DatePosted</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @Html.PagedListPager((IPagedList)ViewBag.OnePageOfPost, pageNumber => Url.Action("FindAllPost", "Profile", new { id=Model.Id, pageNumber = pageNumber }))
+        }
+        else
+        {
+            <div class="noPosts">
+                <i class="material-icons md-72">question_answer</i>
+                <h3>
+                    Thành viên này không có bài viết nào cả! <br />
+                </h3>
+            </div>
+
+        }
+    </div>
+</div>
+

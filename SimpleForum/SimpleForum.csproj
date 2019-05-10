@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <UserSecretsId>aspnet-SimpleForum-2156ED8C-D668-4F5A-932C-104D8AAA270D</UserSecretsId>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCoreRateLimit" Version="3.0.3" />
+    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="1.0.236" />
+    <PackageReference Include="MailKit" Version="2.1.4" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="WebEssentials.AspNetCore.OutputCaching" Version="1.0.16" />
+    <PackageReference Include="WebEssentials.AspNetCore.PWA" Version="1.0.49" />
+    <PackageReference Include="WebEssentials.AspNetCore.StaticFilesWithCache" Version="1.0.1" />
+    <PackageReference Include="WebMarkupMin.AspNetCore2" Version="2.5.0" />
+    <PackageReference Include="WebMarkupMin.Core" Version="2.5.6" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="7.6.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleForum.Data\SimpleForum.Data.csproj" />
+    <ProjectReference Include="..\SimpleForum.Services\SimpleForum.Services.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Moderator\Data\" />
+    <Folder Include="Areas\Moderator\Models\" />
+    <Folder Include="wwwroot\images\users\" />
+  </ItemGroup>
+
+</Project>

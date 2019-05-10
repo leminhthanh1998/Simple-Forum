@@ -1,0 +1,24 @@
+﻿@model SimpleForum.Models.Post.DeletePostModel
+@{ 
+     ViewData["Title"] = "Xóa bài viết";
+}
+<div class="container body-content">
+    @if (Model.IsActive)
+    {
+        <div class="row sectionHeader">
+            <div class="sectionHeading">Bạn có chắc muốn xóa bài viết này hay không?</div>
+            
+        </div>
+        <form asp-action="ConfirmDelete" asp-controller="Post">
+            <input type="hidden" asp-for="PostId"/>
+            <button id="deleteButton" class="btn btn-lg btn-danger">Xác nhận xóa</button>
+            <button id="deleteButton" asp-controller="Post" asp-action="Index" asp-route-id="@Model.PostId" class="btn btn-lg btn-default" >Hủy</button>
+        </form>
+    }
+    else
+    {
+        <div>
+            <h2>Ở trong tù không được xóa bài!!</h2>
+        </div>
+    }
+</div>

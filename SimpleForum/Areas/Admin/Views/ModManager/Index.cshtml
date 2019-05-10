@@ -1,0 +1,53 @@
+﻿@model SimpleForum.Areas.Admin.Models.ModManager.ModManagerModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Quản lý các kiểm duyệt viên";
+}
+
+
+
+<div class="row" id="forumIndexContent">
+    <h2>Quản lý kiểm duyệt viên</h2>
+    <div >
+        <form asp-area="Admin" asp-controller="ModManager" asp-action="AddMod" method="post" enctype="multipart/form-data" class="form-inline">           
+            <div class="form-group mx-sm-3 mb-2">
+                <label class="sr-only">Email</label>
+                <input class="form-control" asp-for="Email" placeholder="Email">
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Thêm</button>
+        </form>
+    </div>
+
+    @if (Model.User.Any())
+    {
+        <table class="table table-hover table-bordered" id="forumIndexTable">
+            <tbody>
+                @foreach (var u in Model.User)
+                {
+                    <tr>
+                        <td>
+                            <div class="forumLogo" style="background-image: url(@u.ProfileImageUrl.); background-size:100%"></div>
+                            <div class="postData">
+                                <div class="postTitle">
+                                    <a asp-controller="Profile" asp-action="Detail" asp-route-id="@u.Id">@u.UserName</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <a class="btn btn-info" asp-area="Admin" asp-controller="ModManager" asp-action="RemoveMod" asp-route-id="@u.Id">Ngưng kiểm duyệt viên</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="noPosts">
+            <h3>
+                Hiện tại diễn đàn chưa có kiểm duyệt viên nào!!
+            </h3>
+        </div>
+
+    }
+</div>

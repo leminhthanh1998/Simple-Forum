@@ -1,0 +1,120 @@
+﻿
+@{
+    ViewData["Title"] = "Tình trạng diễn đàn";
+    var host = Context.Request.Scheme + "://" + Context.Request.Host;
+}
+
+<h1>Tình trạng diễn đàn</h1>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-xs-6 col-md-3">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h1 id="pageview" class="panel-title text-center"></h1>
+                </div>
+                <div class="panel-body text-center">
+                    <strong>Page Views</strong><br />
+                    <code>Last 24 hours</code>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-md-3">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h1 id="pageviewduration" class="panel-title text-center"></h1>
+                </div>
+                <div class="panel-body text-center">
+                    <strong>Page Views Duration</strong><br />
+                    <code>Last 24 hours</code>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-md-3">
+
+            <div class="panel status panel-warning">
+                <div class="panel-heading">
+                    <h1 id="requestduration" class="panel-title text-center"></h1>
+                </div>
+                <div class="panel-body text-center">
+                    <strong>Request Duration</strong><br />
+                    <code>Last 24 hours</code>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-xs-6 col-md-3">
+
+            <div class="panel status panel-success">
+                <div class="panel-heading">
+                    <h1 id="serverexc" class="panel-title text-center"></h1>
+                </div>
+                <div class="panel-body text-center">
+                    <strong>Server Exception</strong><br />
+                    <code>Last 24 hours</code>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-xs-6 col-md-3">
+
+            <div class="panel status panel-info">
+                <div class="panel-heading">
+                    <h1 id="browserex" class="panel-title text-center"></h1>
+                </div>
+                <div class="panel-body text-center">
+                    <strong>BrowserException</strong><br />
+                    <code>Last 24 hours</code>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <a href="https://portal.azure.com" target="_blank" class="btn btn-info">View On Azure</a>
+</div>
+@section Scripts{
+    <script>
+        $.get('/admin/getpv',
+                    function (data) {
+                        if (data != null) {
+                            $('#pageview').text(data);
+                        }
+                    }
+        );
+        $.get('/admin/getpvd',
+                    function (data) {
+                        if (data != null) {
+                            $('#pageviewduration').text(data);
+                        }
+                    }
+        );
+        $.get('/admin/getrd',
+                    function (data) {
+                        if (data != null) {
+                            $('#requestduration').text(data);
+                        }
+                    }
+        );
+        $.get('/admin/getse',
+                    function (data) {
+                        if (data != null) {
+                            $('#serverexc').text(data);
+                        }
+                    }
+        );
+        $.get('/admin/getbe',
+                    function (data) {
+                        if (data != null) {
+                            $('#browserex').text(data);
+                        }
+                    }
+        );
+
+    </script>
+}
+

@@ -1,0 +1,94 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model SimpleForum.Models.ApplicationUser.ProfileModel
+@inject UserManager<SimpleForum.Data.Models.ApplicationUser> UserManager
+
+
+<div class="container body-content">
+    <div class="row sectionHeader">
+        <div class="sectionHeading noBorder">
+            Thông tin thành viên
+        </div>
+        @if ((User.IsInRole("Admin") || User.IsInRole("Mod")) && UserManager.GetUserId(User) != Model.UserId)
+        {
+            var textButton = @Model.IsActive ? "Nhốt tù" : "Thả tù";
+            var user = await UserManager.FindByIdAsync(Model.UserId);
+
+            if (User.IsInRole("Admin"))
+            {
+                <form method="post" asp-controller="Profile" asp-action="BanOrUnban">
+                    <div>
+                        <input type="hidden" asp-for="UserId" />
+                        <button class="btn btn-danger" active="@Model.IsActive">@textButton</button>
+                    </div>
+                </form>
+            }
+            if (User.IsInRole("Mod") && (!UserManager.GetRolesAsync(user).Result.Contains("Mod") && !UserManager.GetRolesAsync(user).Result.Contains("Admin")))
+            {
+                <form method="post" asp-controller="Profile" asp-action="BanOrUnban">
+                    <div>
+                        <input type="hidden" asp-for="UserId" />
+                        <button class="btn btn-danger" active="@Model.IsActive">@textButton</button>
+                    </div>
+                </form>
+            }
+        }
+    </div>
+    @if (Context.User.Identity.IsAuthenticated)
+    {
+        <div class="row userProfile">
+            <div class="col-md-4">
+                <div id="userProfileImage" style="background-image: url(@Model.ProfileImageUrl); background-size:100%;"></div>
+                @if (Context.User.Identity.Name == Model.Username && Model.IsActive)
+                {
+                    <form method="post" enctype="multipart/form-data" asp-controller="Profile" asp-action="UploadProfileImage">
+                        <div id="upload">
+                            <label class="btn btn-default btn-file">
+                                Browse <input type="file" name="file" style="display: none;">
+                            </label>
+                        </div>
+                        <button type="submit" id="btn-profile" class="btn btn-default">Đăng</button>
+                    </form>
+                }
+            </div>
+            <div class="col-md-8">
+                @if (Model.IsActive)
+                {
+                    <span>@Model.Username</span><br />
+                }
+                else
+                {
+                    <strike><span>@Model.Username</span></strike><br />
+                }
+                @if (@Model.IsAdmin)
+                {
+                    <span style="color:red">Admin</span><br />
+                }
+                @if (@Model.IsMod)
+                {
+                    <span style="color:hotpink">Mod</span><br />
+                }
+                <span id="userRating">Số bài viết: @Model.PostCount</span><br />
+                @if (User.IsInRole("Admin"))
+                {
+                    <span id="userEmailLabel">Email: @Model.Email</span><br />
+                    <span id="userEmailLabel">Xác nhận email: @Model.IsComfirmEmail</span><br />
+                }
+
+                <span id="userCreatedLabel">Thành viên từ: @Model.DateJoined</span><br />
+                <span id="userActiveLabel">
+                    Trạng thái:
+                    @if (!@Model.IsActive)
+                    {
+                        <span class="inactiveUser">Ban nick</span><br />
+                    }
+                    else
+                    {
+                        <span>Kích hoạt</span><br />
+                    }
+                </span>
+                <a asp-action="FindAllPost" asp-route-id="@Model.UserId">Tìm tất cả bài viết của thành viên này</a>
+
+            </div>
+        </div>
+    }
+</div>

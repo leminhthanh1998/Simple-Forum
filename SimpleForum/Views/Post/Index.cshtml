@@ -1,0 +1,186 @@
+﻿@model SimpleForum.Models.Post.PostIndexModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<SimpleForum.Data.Models.ApplicationUser> UserManager
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["Description"] = "Nội dung bài viết: " + Model.Title;
+    var countCmt = 0;
+}
+
+<div class="container body-content">
+    @if (!Model.IsReview || Model.AuthorID == UserManager.GetUserId(User) || User.IsInRole("Admin"))
+    {
+        <div class="row postHeader">
+            <div class="postHeading" style="width:100%">
+                <span class="postIndexTitle">
+                    @Model.Title
+                </span>
+                <p style="float:right;" id="headingBtn"><a asp-controller="Forum" asp-action="Topic" asp-route-id="@Model.ForumId" class="btn btn-back">Quay lại @Model.ForumName</a></p>
+            </div>
+        </div>
+
+        <div class="row" id="postIndexContent">
+            <div class="col-md-3 postAuthorContainer">
+                <div class="postAuthorImage" style="background-image: url(@Model.AuthorImageUrl);"></div>
+                @if (Model.IsActive)
+                {
+                    <a asp-controller="Profile" asp-action="Detail" asp-route-id="@Model.AuthorID">@Model.AuthorName</a><br />
+                }
+                else
+                {
+                    <strike><a asp-controller="Profile" asp-action="Detail" asp-route-id="@Model.AuthorID">@Model.AuthorName</a></strike><br />
+                }
+                <span class="postData">@Model.Created</span><br />
+                @if (Model.IsAuthorAdmin)
+                {
+                    <span style="color:red">Admin</span><br />
+                }
+                @if (Model.IsMod)
+                {
+                    <span style="color:hotpink">Mod</span><br />
+                }
+                @if (!Model.IsActive)
+                {
+                    <span style="color:black">Banned</span><br />
+                }
+            </div>
+            <div class="col-md-9 postContentContainer">
+                @{
+                    await Html.RenderPartialAsync("_SocialSharing", Model.Title);
+                }
+                @if (Model.IsReview)
+                {
+                    <span style="color: red">Bài viết đang chờ BQT xét duyệt!</span><br />
+                }
+                @if (!Model.CloseOrOpen)
+                {
+                    <span style="color:red">Bài viết đã bị khóa bình luận.</span><br />
+                }
+                <div class="postContent">
+                    @Html.Raw(Model.PostContent)
+                </div>
+            </div>
+        </div>
+        @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Mod") || UserManager.GetUserId(User) == Model.AuthorID))
+        {
+            var btnCloseOrOpenText = @Model.CloseOrOpen ? "Đóng bài viết" : "Mở bài viết";
+            <div class="row">
+                <span><a asp-controller="Post" asp-action="Delete" asp-route-id="@Model.Slug" class="btn btn-danger">Xóa bài viết</a></span>
+                <span><a asp-controller="Post" asp-action="Edit" asp-route-id="@Model.Slug" class="btn btn-info">Sửa bài viết</a></span>
+                @if (User.IsInRole("Admin") || User.IsInRole("Mod"))
+                {
+                    <span><a asp-controller="Post" asp-action="CloseOrOpen" asp-route-id="@Model.Slug" class="btn btn-dark">@btnCloseOrOpenText</a></span>
+                    <span><a asp-controller="Post" asp-action="Move" asp-route-id="@Model.Slug" class="btn btn-secondary">Chuyển bài viết</a></span>
+                }
+                @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Mod")) && Model.IsReview == true)
+                {
+                    <span><a asp-controller="Post" asp-action="AcceptPost" asp-route-id="@Model.Slug" class="btn btn-info">Duyệt bài</a></span>
+                }
+            </div>
+        }
+
+
+        @*@if (Model.Replies.Any())
+        {*@
+            <div id="sectioncmt">
+                @foreach (var r in ViewBag.OnePageOfReply)
+                {
+                    countCmt++;
+                    <div class="row replyContent" id="@countCmt">
+                        <div class="col-md-3 replyAuthorContainer">
+                            <div class="postAuthorImage" style="background-image: url(@r.AuthorImageUrl)"></div>
+                            @if (r.IsActive)
+                            {
+                                <a asp-controller="Profile" asp-action="Detail" asp-route-id="@r.AuthorId">@r.AuthorName</a><br />
+                            }
+                            else
+                            {
+                                <strike><a asp-controller="Profile" asp-action="Detail" asp-route-id="@r.AuthorId">@r.AuthorName</a></strike><br />
+                            }
+                            @if (r.IsAdmin)
+                            {
+                                <span style="color:red">Admin</span><br />
+                            }
+                            @if (r.IsMod)
+                            {
+                                <span style="color:hotpink">Mod</span><br />
+                            }
+                            @if (!r.IsActive)
+                            {
+                                <span style="color:black">Banned</span><br />
+                            }
+                            <span>@r.Date</span>
+                        </div>
+                        <div class="col-md-9 replyContentContainer">
+                            <div class="postContent">
+                                @Html.Raw(r.ReplyContent)
+                            </div>
+                            @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Mod") || UserManager.GetUserId(User) == r.AuthorId))
+                            {
+                                <div class="row">
+                                    <span><a asp-controller="Reply" asp-action="Delete" asp-route-id="@r.Id">Xóa trả lời | </a></span>
+                                    <span><a asp-controller="Reply" asp-action="Edit" asp-route-id="@r.Id"> Sửa trả lời</a></span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+            @Html.PagedListPager((IPagedList)ViewBag.OnePageOfReply, pageNumber => Url.Action("Index", "Post", new { id = Model.Slug, pageNumber = pageNumber }))
+        
+        @*else
+        {
+            <div class="noPost">
+                <h3>
+                    Bài đăng này chưa có ai trả lời cả.<br />
+                </h3>
+            </div>
+        }*@
+    }
+    else
+    {
+        <div class="noPost">
+            <h3>
+                Bạn không được xem bài viết này vì nó đang nằm trong danh sách cần kiểm duyệt.<br />
+            </h3>
+        </div>
+    }
+</div>
+
+@if ((User.Identity.IsAuthenticated && Model.CloseOrOpen && !Model.IsReview) || User.IsInRole("Admin") || User.IsInRole("Mod"))
+{
+    <div class="row" style="margin-left:-3px; margin-bottom:15px;">
+        <a asp-controller="Reply" asp-action="Create" asp-route-id="@Model.Slug" class="btn btn-newReply">Đăng trả lời</a>
+    </div>
+}
+@section Scripts {
+    <script src="~/js/lazy.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/notihub", { transport: signalR.HttpTransportType.WebSockets, skipNegotiation: true }).build();
+        var duongDan;
+        var cmtID;
+        var trang;
+        var currentUrl = location.pathname;
+        connection.on("ReceiveNotify", function (slug, sectionID, page, data) {
+            if (currentUrl.includes(slug)) {
+                document.getElementById("notifyNewCmt").style.display = "block";
+                $('#notifyNewCmt').delay(6000).fadeOut('slow');
+                duongDan = slug;
+                cmtID = sectionID;
+                trang = page;
+                var cmts = $('.replyContent').length;
+                if (cmts < 10) {
+                    $("#sectioncmt").append(data);
+                }
+            }
+        });
+
+        connection.start();
+
+        function goToNewCmt() {
+            window.location.assign('/Post/' + duongDan + '/' + trang + '#' + cmtID);
+        };
+    </script>
+}

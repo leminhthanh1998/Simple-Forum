@@ -1,0 +1,44 @@
+﻿@model SimpleForum.Models.Forum.ForumIndexModel
+@{
+    ViewData["Title"] = "Forum";
+    ViewData["Description"] = "Các forum con";
+}
+<h1>Forum</h1>
+
+<table class="table table-hover" id="forumIndexTable">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Tên diễn đàn</th>
+            <th>Bài viết mới</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var f in Model.ForumList)
+        {
+            <tr>
+                <td>
+                    <div class="forumLogo" style="background-image: url(@f.ImageUrl); background-size:100%"></div>
+                </td>
+                <td>
+                    <a asp-controller="Forum" asp-action="Topic" asp-route-id="@f.Id" data-toggle="tooltip" data-placement="top" title="@f.Description!">
+                        @f.Name
+                    </a>
+                </td>
+                <td>
+                    <div class="postTitle">
+                        @if (f.LatestPost != null)
+                        {
+                            <a asp-controller="Post" asp-action="Index" asp-route-id="@f.LatestPost.Slug">@f.LatestPost.Title</a>
+                        }
+                        else
+                        {
+                            <span>Chưa có bài viết!</span>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

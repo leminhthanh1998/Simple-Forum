@@ -1,0 +1,75 @@
+﻿@model SimpleForum.Models.ApplicationUser.ProfileListModel
+@{
+    ViewData["Title"] = "Xem danh sách thành viên";
+    ViewData["Description"] = "Các thành viên có trong diễn đàn";
+}
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+
+
+<div class="container body-content">
+    <div class="row sectionHeader">
+        <div class="sectionHeading">Xem thành viên</div>
+    </div>
+    <div class="row" id="forumIndexContent">
+        <table class="table table-hover" id="forumIndexTable">
+            <thead>
+                <tr>
+                    <th>
+                        Ảnh đại diện
+                    </th>
+                    <th>
+                        Username
+                    </th>
+                    <th>
+                        Thành viên từ
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var profile in ViewBag.OnePageOfProfile)
+                {
+                <tr class="userRow">
+                    <td>
+                        <div class="userProfilePic" style="background-image: url(@profile.ProfileImageUrl); background-size:100%; height:80px; width:80px;"></div>
+                    </td>
+                    <td>
+                        @if(profile.IsActive)
+                            {
+                        <a asp-controller="Profile" asp-action="Detail" , asp-route-id="@profile.UserId">
+                            @profile.Username
+                        </a>
+                            }
+                            else
+                            {
+                            <strike>
+                                <a asp-controller="Profile" asp-action="Detail" , asp-route-id="@profile.UserId">
+                                    @profile.Username
+                                </a>
+                            </strike>
+                            }
+
+                    </td>
+                    <td>
+                        @profile.DateJoined
+                    </td>
+                    <td>
+                        @if (profile.IsActive)
+                            {
+                        <span>Kích hoạt</span>
+                            }
+                            else
+                            {
+                        <span class="inactiveUser">Ban nick</span>
+                            }
+                    </td>
+                </tr>
+                }
+            </tbody>
+            @Html.PagedListPager((IPagedList)ViewBag.OnePageOfProfile, pageNumber => Url.Action("Index", "Profile", new { pageNumber = pageNumber }))
+        </table>
+    </div>
+</div>

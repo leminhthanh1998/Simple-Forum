@@ -1,0 +1,45 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Các thành viên đang online";
+}
+<div class="container">
+    <div class="row" >
+        <div>
+            <br />
+            <h5 id="numberOnline"></h5>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Thành viên</th>
+                    <th>Địa chỉ IP</th>
+                    <th>Đang truy cập</th>
+                </tr>
+            </thead>
+            <tbody id="trow"></tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        var connection3 = new signalR.HubConnectionBuilder().withUrl("/userhub", { transport: signalR.HttpTransportType.WebSockets,  skipNegotiation: true }).build();
+
+        connection3.on("ReceiveInfoUser", function (htmldata) {
+            if (htmldata != null) {
+                $("#trow").append(htmldata);
+                var rows = $('.userRow').length;
+                if (rows == 11) {
+                    $("table tr:first-child").remove();
+                }
+            }
+        });
+        connection3.on("ReceiveInfoOnline", function (numberonline) {
+            if (numberonline != null) {
+                $('#numberOnline').text('Đang online: ' + numberonline);
+                $(document).attr("title", "Đang online: " + numberonline);
+            }
+        });
+        connection3.start();
+    </script>
+}

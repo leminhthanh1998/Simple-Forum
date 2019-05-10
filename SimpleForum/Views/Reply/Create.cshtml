@@ -1,0 +1,98 @@
+﻿@model SimpleForum.Models.Reply.PostReplyModel
+@using SimpleForum.Helper.Recapcha
+@using Microsoft.Extensions.Options
+
+@inject IOptions<RecaptchaSettings> RecaptchaSettings
+
+@{
+    var host = Context.Request.Host.ToString();
+    ViewData["Title"] = "Tạo bình luận cho " + Model.PostTitle;
+    ViewData["Description"] = "Nội dung bài viết: " + Model.PostTitle;
+}
+
+<div class="container body-content">
+    <div class="row sectionHeader">
+        <div class="sectionHeading">
+            Trả lời | @Model.PostTitle
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="replyOriginalPost">
+            <h3>
+                @Model.PostTitle
+            </h3>
+            <p>
+                @Html.Raw(@Model.PostContent)
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="createPostSection">
+            @if ((Model.IsActive && Model.CloseOrOpen && !Model.IsReview) || Model.IsAdmin || Model.IsMod)
+            {
+                <div class="authorBlock">
+                    Bạn đang trả lời dưới tên <span class="authorBlockName">@Model.AuthorName</span>
+                </div>
+
+                <form asp-action="AddReply" method="post" id="addPostForm">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <div class="form-group">
+                        <label asp-for="ReplyContent">Nội dung</label>
+                        <textarea asp-for="ReplyContent" rows="15" class="form-control" placeholder="Viết trả lời của bạn ở đây"></textarea>
+                        <span asp-validation-for="ReplyContent" class="text-danger"></span>
+                    </div>
+                    <button type="submit" id="registerBtn" class="btn btn-submitPost">Đăng trả lời</button>
+                    <input asp-for="AuthorId" type="hidden" />
+                    <input asp-for="PostId" type="hidden" />
+                    <input asp-for="ForumName" type="hidden" />
+                    <input asp-for="ForumId" type="hidden" />
+                    <input asp-for="Slug" type="hidden" />
+                    <input asp-for="NumberOfReply" type="hidden" />
+                    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
+                    <input type="hidden" name="action" value="validate_captcha">
+                </form>
+            }
+            else if (!Model.IsActive)
+            {
+                <h2>Ở trong tù không được trả lời!!</h2>
+            }
+            else if (!Model.CloseOrOpen)
+            {
+                <h2>Bài viết đã bị khóa!!</h2>
+            }
+            else if (!Model.IsReview)
+            {
+                <h2>Bài viết cần được phê duyệt để có thể trả lời!!</h2>
+            }
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://www.google.com/recaptcha/api.js?render=@RecaptchaSettings.Value.SiteKey"></script>
+    <script src="//@host/lib/tinymce/tinymce.min.js"></script> @*with enabled CDN tinymce is not able to find some files*@
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            theme: 'modern',
+            plugins: ['advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                'searchreplace wordcount visualblocks visualchars code fullscreen',
+                'insertdatetime media nonbreaking save table contextmenu directionality',
+                'emoticons template paste textcolor colorpicker textpattern imagetools'
+            ],
+            toolbar1: 'insertfile undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image |print preview media | forecolor backcolor emoticons|fontselect fontsizeselect styleselect'
+        });
+    </script>
+    <script src="~/js/lazy.js"></script>
+    <script>
+        if (typeof grecaptcha !== 'undefined') {
+		grecaptcha.ready(function () {
+			grecaptcha.execute('6LeECKEUAAAAAJtAKXzeUgj-Xd7CRa1upVgbzLCJ', { 'action': 'homepage' }).then(function (token) {
+				document.getElementById('g-recaptcha-response').value = token;
+			});
+		});
+	}
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

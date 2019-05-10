@@ -1,0 +1,107 @@
+﻿@model SimpleForum.Models.Forum.ForumTopicModel
+@using SimpleForum.Models.Post
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@{
+    ViewData["Title"] = Model.Forum.Name;
+    ViewData["Description"] = Model.Forum.Description;
+}
+
+<div class="container body-content">
+    <div class="row sectionHeader">
+        <div class="col-md-6 sectionHeading">
+            <span id="results">@Model.Forum.Name Forum</span>
+            @if (Context.User.Identity.IsAuthenticated)
+            {
+                <span id="headingBtn"><a asp-controller="Post" asp-action="Create" asp-route-id="@Model.Forum.Id" class="btn btn-light">Tạo bài viết</a></span>
+            }
+            <form asp-controller="Forum" asp-action="Search" method="post">
+                <div class="searchForm">
+                    <input asp-for="SearchQuery" type="text" placeholder="Tìm kiếm..." class="searchBar" onfocus="clearThis(this)">
+                    <button type="submit" class="btn btn-forumSearch">
+                        <i class="material-icons">search</i>
+                    </button>
+                </div>
+                <input asp-for="Forum.Id" name="id" type="hidden" />
+            </form>
+        </div>
+        <div class="col-md-6 col-md-offset-2 sectionDescription">
+            <div class="forumLogo" style="background-image: url(@Model.Forum.ImageUrl)"></div>
+            <p>Chào mừng đến @Model.Forum.Name forum. Hãy đăng bài đúng nội quy bạn nhé!</p>
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <p>
+                    <span>
+                        Bạn phải
+                        <a asp-area="Identity" asp-page="/Account/Register">đăng ký </a>
+                        để có thể tạo được bài viết
+                    </span>
+                </p>
+            }
+        </div>
+    </div>
+    <div class="row forumIndexContent">
+        @if (((IEnumerable<PostListingModel>)ViewBag.OnePageOfPost).Any())
+        {
+            <table class="table table-hover table-bordered" id="forumIndexTable">
+                <tbody>
+                    @foreach (var post in ViewBag.OnePageOfPost)
+                    {
+                        <tr>
+                            <td>
+                                <div class="postData">
+                                    <div class="postTitle">
+                                        <a asp-controller="Post" asp-action="Index" asp-route-id="@post.Slug">@post.Title</a>
+                                    </div>
+                                    <div class="forumSubTitle">
+                                        <div>
+                                            <span class="postAuthor">
+                                                <a asp-controller="Profile" asp-action="Detail" asp-route-id="@post.AuthorId">
+                                                    @post.AuthorName
+                                                </a>
+                                            </span>
+                                            lúc
+                                            <span class="postDate">
+                                                @post.DatePosted
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="forumPostCount">
+                                    Trả lời: @post.RepliesCount
+                                </div>
+                            </td>
+                            <td>
+                                <div class="postDate">@post.DatePosted</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+            @Html.PagedListPager((IPagedList)ViewBag.OnePageOfPost, pageNumber => Url.Action("Topic", "Forum", new { id = Model.Forum.Id, pageNumber = pageNumber, searchQuery = "" }))
+        }
+        else
+        {
+            <div class="noPost">
+                <i class="material-icons md-72">question_answer</i>
+                <h3>
+                    Dường như không có bài viết nào cả. Sao bạn không thử
+                    <a asp-controller="Post" asp-action="Create" asp-route-id="@Model.Forum.Id"><span>tạo</span></a>
+                    một bài nhỉ?
+                </h3>
+            </div>
+        }
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        function clearThis(target) {
+            target.value = "";
+        }
+    </script>
+}

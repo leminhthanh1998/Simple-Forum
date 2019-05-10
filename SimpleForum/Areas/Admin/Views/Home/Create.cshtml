@@ -1,0 +1,33 @@
+﻿@model SimpleForum.Areas.Admin.Models.Home.CreateForumModel
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Tạo thêm diễn đàn con mới";
+}
+
+
+<div class="upload-container">
+    <div class="upload-form drop-shadow">
+        <form asp-area="Admin" asp-controller="Home" asp-action="CreateNewForum" method="post" enctype="multipart/form-data" id="upload-form">
+            <div class="form-group">
+                <label asp-for="Title">Tiêu đề</label>
+                <input asp-for="Title" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Description">Mô tả</label>
+                <input asp-for="Description" class="form-control" />
+            </div>
+            <div>
+                <label class="btn btn-default btn-file">
+                    Image
+                    <input type="file" name="file" style="display:none" />
+                </label>
+            </div>
+            <div class="submit">
+                <button type="submit" id="btn-upload" class="btn btn-info">
+                    Lưu
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
