@@ -3,7 +3,9 @@ A SimpleForum based on .Net Core 2.2!
 
 ![Minion](https://forum-ids.org/wp-content/themes/forumids/img/forum-international-volunteering.png)
 
-SimpleForum là 1 ứng dụng web được viết trên nền .Net Core 2.2. SimpleForum đáp ứng nhu cầu của 1 forum đơn giản với các tính năng:
+SimpleForum là 1 ứng dụng web được viết trên nền .Net Core 2.2. SimpleForum đáp ứng nhu cầu của 1 forum đơn giản, tuy nhiên hiện tại vẫn còn thiếu nhiều chức năng. Hy vọng các bạn có thể tham gia phát triển cùng với mình! 
+
+Các tính năng chính:
 + Theo dõi realtime các thành viên truy cập diễn đàn.
 + Bình luận realtime.
 + Đăng ký xác nhận email, đăng nhập bằng Facebook/Google.
